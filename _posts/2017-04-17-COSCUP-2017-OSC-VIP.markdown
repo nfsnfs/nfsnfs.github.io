@@ -11,7 +11,7 @@ categories: COSCUP
 
 COSCUP 2016 有許多貢獻者申請了票，但卻沒把邀請碼用掉，應該是要來寫篇文章解釋一下開源貢獻者的資格和開源貢獻者票卷的申請與使用流程。
 
-In COSCUP 2016, many contributors applied for the OSC VIPs, but didn't use their invitation codes, so I think we should explain who can apply for OSC VIP and what the process of an OSC application is.
+In 2016, many contributors applied for the COSCUP OSC VIPs, but didn't successfully redeem their invitation codes. So we'd like to further explain...
 
 這件事其實也是我去年沒有把整個流程處理好的關係，所以小弟必須在這邊跟大家鞠躬道歉 ... <(\_ \_)>
 
@@ -33,7 +33,7 @@ So, not only programmers can apply tickets! Come to join open source projects! J
 
 COSCUP 官方四月到五月會公布申請流程，會請大家填寫資料，可能是 KKTIX or Google Docs，然後等到審核完畢後，會發一封信到申請者的信箱，並提供邀請碼，這時候！你！還！沒！成！功！報！名！喔！請拿著這個邀請碼到報名系統上報名，選擇「 OSC VIP / 開源貢獻者票」，有能力的話請隨手捐個 500 當作香油錢當作 COSCUP 籌辦的花費，到這邊你才真正報名完成!
 
-COSCUP would announce the OSC application event in April or May. You need to fill in all the information on KKTIX website or Google Docs. After the review process, COSCUP will send an email to you and give you the invitation code. The application process is not over now!!! Please use this inviation code on the registration system (maybe KKTIX), and select OSC VIP for registration. If you feel COSCUP is good, you may donate $500 NTD to COSCUP when registering. :-)
+COSCUP would announce the OSC application event in April or May. You need to fill in all the information on KKTIX website or Google Docs. After the review process, COSCUP will send an email to you and give you the invitation code. The application process is not over now!!! Please use this inviation code on the registration system (maybe KKTIX), and select OSC VIP for registration. If you feel good about COSCUP and would like to support financially, you can choose donate $500 NTD to COSCUP during the registering process.
 
 希望大家都能享受 COSCUP!
 
