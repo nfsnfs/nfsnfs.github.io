@@ -1,0 +1,47 @@
+---
+layout: post
+title:  "angr - symbolic execution engine"
+date:   2018-02-22 16:20:02 +0800
+categories: angr
+---
+
+# Why?
+
+angr 是一個 symbolic execution engine，這幾年在 CTF 比賽很紅，在 CGC 後，UCSB 開源了 [Driller](https://github.com/shellphish/driller) 和發表了 [(State of) The Art of War: Offensive Techniques in Binary Analysis](https://www.cs.ucsb.edu/~vigna/publications/2016_SP_angrSoK.pdf) 與  [Driller: Augmenting Fuzzing Through Selective Symbolic Execution](http://cs.ucsb.edu/~chris/research/doc/ndss16_driller.pdf) 後，大眾越來越認為用電腦來找 vulnerability 似乎是可行的，而目前工作允許我花些時間在研究 angr 的實作和 Cyber reasoning system 的研究上，所以就拿這個 blog 來作筆記了。
+
+## Symbolic Execution
+
+大部分人可能對 symbolic execution (符號執行) 是什麼比較模糊，我這邊以我自身的理解 (不知道是不是對的) 解釋一下。
+
+一般程式執行的時候我們需要給一個 concrete input，但在符號執行的世界裡面，我們用 symbolic input，也就是把 input 用一個符號來表示，然後執行的時候就以這個符號當作輸入，在每一步執行的時候蒐集路徑的 constraint，因此如果在符號執行走到程式的某個地方時，我們就可以蒐集路上所有的 constraints，要是我們再找個 constraint solver 來解這些 constraints，就可以找到能走到這個地方的真實 input。
+
+對於找 vulnerability，並找出能觸發漏洞的 input，符號執行是其中一個 solution。業界為了效率考量，大部分會直接使用 Fuzzing。
+
+# Reference
+
+## Documents
+- [angr 官方文件](https://docs.angr.io/)
+- [angr API document](http://angr.io/api-doc/angr.html)
+- [cle document](http://angr.io/api-doc/cle.html)
+
+## Blogs
+- http://ysc21.github.io/
+
+# Let's start!
+
+## 起手式
+
+```
+>>> import angr
+>>> proj = angr.Project('/bin/ls')
+```
+
+以上可以開啟一個 binary 進來，然後透過 ```proj``` 就可以存取關於這個 binary 的基本資訊，例如： ```.filename```, ```.entry``` (Entry point) 等。
+
+而要執行還需透過 ```loader```，如： ```proj.loader``` 底下可以用 ```.shared_objects``` 來看這個 binary 需要的 .so，或 ```.main_object``` 找到 main 的位置。
+
+而 ```proj.factory``` 底下有大部分你需要的事情，如： ```.block``` for basic block、```.entry_state``` for 一開始執行的 ```SimState```，每個執行 state 的狀態 (如：registers 的值、記憶體內容、file system data)、```.simulation_manager``` for ```SimulationManager```，模擬執行。
+
+如果想要對 binary 做分析的話，可以使用 ```proj.analyses```，底下有很多分析資訊，像是常用的 control flow graph (```.CFGFast```)
+
+拿著 ipython 開始試著 load 一個 binary 來玩吧!
