@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "angr - symbolic execution engine"
+title:  "angr's procedure simulation and loaded objects"
 date:   2018-02-23 19:01:02 +0800
 categories: angr
 ---
