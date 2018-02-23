@@ -23,7 +23,7 @@ twitter_username: __nfsnfs
 github_username: nfsnfs
 
 # Build settings
-markdown: redcarpet
+markdown: kramdown
 theme: minima
 gems:
   - jekyll-feed

@@ -1,0 +1,87 @@
+---
+layout: post
+title:  "angr - symbolic execution engine"
+date:   2018-02-23 19:01:02 +0800
+categories: angr
+---
+
+# Second Period
+
+## Loaded Objects
+
+想知道 load 哪些 objects 進來可以透過 ```proj.loader.all_objects```，想知道特定的 symbol 被載在哪裡也可以喔，例如：
+
+```python
+In [37]: proj.loader.all_objects
+Out[37]:
+[<ELF Object baby-re, maps [0x400000:0x603067]>,
+ <ELF Object libc-2.26.so, maps [0x1000000:0x13b9a5f]>,
+ <ELF Object ld-2.26.so, maps [0x2000000:0x222710f]>,
+ <ELFTLSObject Object cle##tls, maps [0x3000000:0x300d010]>,
+ <ExternObject Object cle##externs, maps [0x4000000:0x4008000]>,
+ <KernelObject Object cle##kernel, maps [0x5000000:0x5008000]>]
+
+In [38]: proj.loader.find_symbol('printf')
+Out[38]: <Symbol "printf" in libc.so.6 at 0x10574c0>
+ ```
+
+然後我們可以透過 ```.imports``` 知道這個 binary 匯入了哪些函數：
+
+```python
+In [52]: proj.loader.all_objects[0].imports
+Out[52]:
+{u'__gmon_start__': <cle.backends.elf.relocation.amd64.R_X86_64_GLOB_DAT at 0x7fdbdd8ed750>,
+ u'__isoc99_scanf': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8edb50>,
+ u'__libc_start_main': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8ed690>,
+ u'__stack_chk_fail': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8ed610>,
+ u'fflush': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8ed990>,
+ u'printf': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8ed890>,
+ u'puts': <cle.backends.elf.relocation.amd64.R_X86_64_JUMP_SLOT at 0x7fdbdd8ed8d0>}
+ ```
+
+## External Calls Simulation
+
+一般來說，在呼叫外部 calls 的時候，angr 會使用 ```SimProcedures``` 取代，可以使用 ```angr.SIM_PROCEDURES``` 來看有哪些 function 已經有模擬的實作，另外，可以在 [angr/procedures](https://github.com/angr/angr/tree/master/angr/procedures) 看到這些實做好的 calls。以 linux_kernel/lseek.py 來說：
+
+```python
+import angr
+
+import logging
+l = logging.getLogger("angr.procedures.syscalls.lseek")
+
+class lseek(angr.SimProcedure):
+
+    IS_SYSCALL = True
+
+    def run(self, fd, seek, whence): #pylint:disable=arguments-differ,unused-argument
+
+        if self.state.se.symbolic(whence):
+            err = "Symbolic whence is not supported in lseek syscall."
+            l.error(err)
+            raise angr.errors.SimPosixError(err)
+
+        whence = self.state.se.eval(whence)
+
+        if self.state.se.symbolic(seek):
+            err = "Symbolic seek is not supported in lseek syscall."
+            l.error(err)
+            raise angr.errors.SimPosixError(err)
+
+        seek = self.state.se.eval(seek)
+
+        # Symbolic fd case is handled in posix.seek
+
+        # Call posix plugin to actually move us
+        ret = self.state.posix.seek(fd, seek, whence)
+
+        # Posix only actually returns 0 or -1. Check for error
+        if ret == -1:
+            return self.state.se.BVV(-1, self.state.arch.bits)
+
+        # To be compliant, we must return the current position on success
+        return self.state.posix.pos(fd)
+```
+
+這個例子可以看到，lseek system call 不允許 ```whence``` 和 ```seek``` 這兩個參數為 symbolic variable (我一時不太清楚為什麼 ```seek``` 參數不能是 symbolic variable，```seek``` 有可能是來自外在的 input 才是呀)。除此之外，```lseek``` 的實作已經在 ```state_plugins/posix.py``` 做過了，因此就直接呼叫了之前的實作。在 return value 的部份，則只會回傳 0 或 1。
+
+原本今天還想寫 Hook 部份的，不過這主軸就留到下次吧。

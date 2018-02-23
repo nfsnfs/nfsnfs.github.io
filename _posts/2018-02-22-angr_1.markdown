@@ -31,7 +31,7 @@ angr 是一個 symbolic execution engine，這幾年在 CTF 比賽很紅，在 C
 
 ## 起手式
 
-```
+```python
 >>> import angr
 >>> proj = angr.Project('/bin/ls')
 ```
