@@ -12,7 +12,7 @@ I met some crashes when my program runs in x86 platform. And finally I found tha
 
 ## C++
 {% highlight cpp %}
-#define __STDC_FORMAT_MACROS // don't need this in C++
+#define __STDC_FORMAT_MACROS // don't need this in C
 #include <inttypes.h>
 
 uint64_t a = 1;
